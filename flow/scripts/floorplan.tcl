@@ -18,6 +18,9 @@ if {![info exists standalone] || $standalone} {
 
   link_design $::env(DESIGN_NAME)
   read_sdc $::env(RESULTS_DIR)/1_synth.sdc
+  if [file exists platforms/$::env(PLATFORM)/derate.tcl] {
+    source platforms/$::env(PLATFORM)/derate.tcl
+  }
   set num_instances [llength [get_cells -hier *]]
   puts "number instances in verilog is $num_instances"
 }
@@ -73,9 +76,9 @@ if {[info exists ::env(MACRO_WRAPPERS)]} {
   }
 }
 
-if {[info exist ::env(EARLY_FANOUT_REPAIR)]} {
-  puts "Optimize fanout..."
-  optimize_fanout -buffer_cell [lindex $::env(MIN_BUF_CELL_AND_PORTS) 0] -max_fanout $::env(MAX_FANOUT)
+if { $::env(PLATFORM) == "gf14" } {
+  # remove buffers inserted by yosys/abc
+  remove_buffers
 }
 
 # pre report
@@ -84,7 +87,7 @@ log_begin $::env(REPORTS_DIR)/2_init.rpt
 puts "\n=========================================================================="
 puts "report_checks"
 puts "--------------------------------------------------------------------------"
-report_checks
+report_checks -fields {input slew capacitance} -format full_clock
 
 puts "\n=========================================================================="
 puts "report_tns"

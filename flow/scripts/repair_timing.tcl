@@ -117,9 +117,9 @@ if {!$fast_timing_repair} {
 
 
   # Repair max fanout
-  puts "Repair max fanout..."
-  set_max_fanout $::env(MAX_FANOUT) [current_design]
-  repair_max_fanout -buffer_cell $buffer_cell
+  # puts "Repair max fanout..."
+  # set_max_fanout $::env(MAX_FANOUT) [current_design]
+  # repair_max_fanout -buffer_cell $buffer_cell
 
   if { [info exists env(TIE_SEPARATION)] } {
     set tie_separation $env(TIE_SEPARATION)
@@ -147,10 +147,8 @@ if {!$fast_timing_repair} {
   repair_timing -iterations $repair_timing_2_iterations {*}$repair_ns_args -auto_buffer_library $buffer_lib_size -capacitance_pessimism_factor $pessimism_factor -transition_pessimism_factor $pessimism_factor
 
 } else {
-  puts "Using fast timing repair"
+  puts "Perform buffer insertion..."
   set_max_fanout $::env(MAX_FANOUT) [current_design]
-
-  puts "Repair design..."
   repair_design -max_wire_length $::env(MAX_WIRE_LENGTH) -buffer_cell $buffer_cell
 
   # Perform resizing
